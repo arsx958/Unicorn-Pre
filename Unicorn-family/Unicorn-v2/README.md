@@ -38,4 +38,8 @@ For more information, please visit our homepage: https://njuvision.github.io/Uni
 
 ## Pretrained Models
 
-* **Ckpt**: https://box.nju.edu.cn/f/c40a24468034424784eb/?dl=1
+* **ckpt**: https://box.nju.edu.cn/f/c40a24468034424784eb/?dl=1
+
+## Authors
+
+These files are provided by Nanjing University [Vision Lab](https://vision.nju.edu.cn/).
