@@ -1,90 +1,49 @@
-# Sparse Tensor-based Multiscale Representation for Point Cloud Geometry Compression
+# Unicorn: A Versatile Point Cloud Compressor Using Universal Multiscale Conditional Coding
 
+**Abstract — ** A universal multiscale conditional coding framework, Unicorn, is proposed to compress the geometry and attribute of any given point cloud. Geometry compression is addressed in [Part I](https://ieeexplore.ieee.org/document/10682571) of this paper, while attribute compression is discussed in [Part II](https://ieeexplore.ieee.org/document/10682566).
 
-Abstract — This study develops a unified Point Cloud Geometry (PCG) compression method through the processing of multiscale sparse tensor-based voxelized PCG. We call this compression method SparsePCGC. The proposed SparsePCGC is a low complexity solution because it only performs the convolutions on sparsely-distributed Most-Probable Positively-Occupied Voxels (MP-POV). The multiscale representation also allows us to compress scale-wise MP-POVs by exploiting cross-scale and same-scale correlations extensively and flexibly. The overall compression efficiency highly depends on the accuracy of estimated occupancy probability for each MP-POV. Thus, we first design the Sparse Convolution-based Neural Network (SparseCNN) which stacks sparse convolutions and voxel sampling to best characterize and embed spatial correlations. We then develop the SparseCNN-based Occupancy Probability Approximation (SOPA) model to estimate the occupancy probability either in a single-stage manner only using the cross-scale correlation, or in a multi-stage manner by exploiting stage-wise correlation among same-scale neighbors. Besides, we also suggest the SparseCNN based Local Neighborhood Embedding (SLNE) to aggregate local variations as spatial priors in feature attribute to improve the SOPA. Our unified approach not only shows state-of-the-art performance in both lossless and lossy compression modes across a variety of datasets including the dense object PCGs (8iVFB, Owlii, MUVB) and sparse LiDAR PCGs (KITTI, Ford) when compared with standardized MPEG G-PCC and other prevalent learning-based schemes, but also has low complexity which is attractive to practical applications.
+For geometry compression, we construct the multiscale sparse tensors of each voxelized point cloud frame and properly leverage lower-scale priors in the current and (previously processed) temporal reference frames to improve the conditional probability approximation or content-aware predictive reconstruction of geometry occupancy in compression.
+
+For attribute compression, Since attribute components exhibit very different intrinsic characteristics from the geometry element, e.g., 8-bit RGB color versus 1-bit occupancy, we process the attribute residual between lower-scale reconstruction and current-scale data. Similarly, we leverage spatially lower-scale priors in the current frame and (previously processed) temporal reference frame to improve the probability estimation of attribute intensity through conditional residual prediction in lossless mode or enhance the attribute reconstruction through progressive residual refinement in lossy mode for better performance.
+
+The proposed Unicorn is a versatile, learning-based solution capable of compressing static and dynamic point clouds with diverse source characteristics in both lossy and lossless modes. Following the same evaluation criteria, Unicorn significantly outperforms standard-compliant approaches like MPEG G-PCC, V-PCC, and other learning-based solutions, yielding state-of-the-art compression efficiency while presenting affordable complexity for practical implementations.
+
+For more information, please visit our homepage: https://njuvision.github.io/Unicorn/ 
 
 
 ## News
-- 2024.12.06 We released the SparsePCGC source code, which also serves as a preview of [Unicorn](https://njuvision.github.io/Unicorn/).
-- 2022.11.25 The paper was accpeted by TPAMI. (J. Wang, D. Ding, Z. Li, X. Feng, C. Cao and Z. Ma, "Sparse Tensor-Based Multiscale Representation for Point Cloud Geometry Compression," in IEEE Transactions on Pattern Analysis and Machine Intelligence, 2022, doi: 10.1109/TPAMI.2022.3225816.)
-- 2022.09.09 Upload supplementary material, which includes comparison details. see `Supplementary_Material.pdf`
-- 2022.06.16 Source codes will be released soon to the public after the approval from the funding agency. Now We make the testing results, testing conditions, pretrained models, and other relevant materials publicly accessible.
-- 2022.06.16 We simplify the implementation and reduce the computational complexity significantly. (e.g., almost 6∼8×). At the same time, we slightly adjust model parameters and achieve better performance on sparse LiDAR point clouds.
-- 2022.01.13 We participate in MPEG AI-3DGC. 
-- 2021.11.23 We have posted the manuscript on arxiv (https://arxiv.org/abs/2111.10633).
+
+* 2024.12.06 **Open source Unicorn Pre ([SparsePCGC](https://github.com/NJUVISION/SparsePCGC))!**
+* 2024.10.28 Unicorn version 2 has responded to the Call for Proposals for AI-based Point Cloud Coding (m70061 & m70062 in [MPEG](https://dms.mpeg.expert/)).
+* 2024.10.05 Initial release of part of the code and results. (The entire source code will be released to the public after the approval from the funding agency.)
+* 2024.09.12 Unicorn version 1 was accepted by TPAMI. (https://ieeexplore.ieee.org/document/10682571 and https://ieeexplore.ieee.org/document/10682566)
 
 
-## Requirments
-- pytorch **1.10**
-- MinkowskiEngine 0.5 
-- **docker pull jianqiang1995/pytorch:1.10.0-cuda11.1-cudnn8-devel**
-- **[Testdata]**: https://box.nju.edu.cn/d/80f52336bbf04ab1a9a6/
-- **[Pretrained Models]**: https://box.nju.edu.cn/f/3bf11a6700fd4466be5c/
-- Training Dataset: ShapeNet (https://box.nju.edu.cn/f/5c5e4568bb614f54b813/);  KITTI (Coming soon)
+## Environment
+
+* pytorch, MinkowskiEngine, etc. 
+    * You can use docker to simply configure the environment: `docker pull jianqiang1995/pytorch:1.10.0-cuda11.1-cudnn8-devel`
 
 
-## Usage
+## Dataset
 
-### Testing
+* **ShapeNet**: https://shapenet.org/ 
+* **RWTT**: https://texturedmesh.isti.cnr.it/ 
+* **MPEG Dataset (Static Objects)**: http://mpegfs.int-evry.fr/MPEG/PCC/DataSets/pointCloud/CfP/datasets/ (MPEG password is required) 
+(You can also access some of them on our NJU BOX. ( https://box.nju.edu.cn/d/51327ae7c2644c0fa1c4/ ))
+* **MPEG Dataset (Dynamic Objects)**: https://mpeg-pcc.org/index.php/pcc-content-database/
+* **KITTI**: https://www.cvlibs.net/datasets/kitti/
+* **Ford**: https://mpegfs.int-evry.fr/ws-mpegcontent/MPEG-I/Part05-PointCloudCompression/dataSets_new/Dynamic_Acquisition/Ford  (MPEG password is required) 
+(You can also access some of them on our NJU BOX. ( https://box.nju.edu.cn/d/2739fe997265478c8673/ ))
 
-The following example commands are provided to illustrate the general testing process.
 
-For dense point clouds:
+(Note: The training dataset generation methods and the amount of training dataset are not required to be fixed. We provide some examples in `data_utils/datasets/READMe.sh` to show how to perform sampling, partition, quantization, and other operations on raw mesh or point cloud data to generate the training datasets.)
 
-```bash
-# dense lossless
-python test_ours_dense.py --mode='lossless' \
---ckptdir='../ckpts/dense/epoch_last.pth' \
---filedir='../../dataset/testdata/testdata_sparsepcgc/8iVFB/' \
---prefix='ours_8i'
-```
+## Results
 
-```bash
-# dense lossy
-python test_ours_dense.py --mode='lossy' \
---ckptdir='../ckpts/dense/epoch_last.pth' \
---ckptdir_sr='../ckpts/dense_1stage/epoch_last.pth' \
---ckptdir_ae='../ckpts/dense_slne/epoch_last.pth' \
---filedir='../../dataset/testdata/testdata_sparsepcgc/8iVFB/' \
---psnr_resolution=1023 --prefix='ours_8i_lossy'
-```
+`./results`
 
-For sparse LiDAR point clouds:
-
-```bash
-# sparse lossless
-python test_ours_sparse.py --mode='lossless' \
---ckptdir_low='../ckpts/sparse_low/epoch_last.pth' \
---ckptdir_high='../ckpts/sparse_high/epoch_last.pth' \
---filedir='../../dataset/testdata/testdata_sparsepcgc/KITTI_q1mm/' \
---voxel_size=1 --prefix='ours_kitti_q1mm'
-```
-
-```bash
-# sparse lossy
-python test_ours_sparse.py --mode='lossy_gpcc' \
---ckptdir_low='../ckpts/sparse_low/epoch_last.pth' \
---ckptdir_high='../ckpts/sparse_high/epoch_last.pth' \
---filedir='../../dataset/testdata/testdata_sparsepcgc/KITTI_q1mm/' \
---voxel_size=1 --prefix='ours_lossy_kitti'
-```
-
-```bash
-# sparse lossy w/ offset
-python test_ours_sparse.py --mode='lossy_gpcc' \
---ckptdir_low='../ckpts/sparse_low/epoch_last.pth' \
---ckptdir_high='../ckpts/sparse_high/epoch_last.pth' \
---ckptdir_offset='../ckpts/sparse_offset/epoch_last.pth' \
---offset --filedir='../../dataset/testdata/testdata_sparsepcgc/KITTI_q1mm/' \
---voxel_size=1 --prefix='ours_lossy_kitti_offset'
-```
-
-Please refer to `./test/README_test.md` for other testing examples, including commands for testing other datasets such as [Owlii](https://mpeg-pcc.org/index.php/pcc-content-database/owlii-dynamic-human-textured-mesh-sequence-dataset/) and [Ford](https://robots.engin.umich.edu/SoftwareData/InfoFord). Detailed testing results are available in the `./results` directory.
-
-### Training
-
-We provide training script in the `./train` directory. Please refer to `./train/README_train.md` for training examples.
 
 ## Authors
-These files are provided by Nanjing University  [Vision Lab](https://vision.nju.edu.cn/). Thanks for the help of Prof. Dandan Ding from Hangzhou Normal University, Prof. Zhu Li from University of Missouri at Kansas. Please contact us (wangjq@smail.nju.edu.cn and mazhan@nju.edu.cn) if you have any questions.
 
+These files are provided by Nanjing University [Vision Lab](https://vision.nju.edu.cn/). Thanks to Prof. Dandan Ding from Hangzhou Normal University and Prof. Yi Lin from Fudan University for their help. Please contact us (mazhan@nju.edu.cn) if you have any questions.
