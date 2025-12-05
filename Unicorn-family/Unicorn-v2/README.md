@@ -42,4 +42,4 @@ For more information, please visit our homepage: https://njuvision.github.io/Uni
 
 ## Authors
 
-These files are provided by Nanjing University [Vision Lab](https://vision.nju.edu.cn/).
+These files are provided by Nanjing University [Vision Lab](https://vision.nju.edu.cn/). Thanks to Prof. Dandan Ding from Hangzhou Normal University.
