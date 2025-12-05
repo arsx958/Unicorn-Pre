@@ -30,19 +30,7 @@ python test.py --threshold=1.15 --kernel_size=5 --block_type='tf' \
     --testdata='ford1mm' --prefix='ford1mm' 
     or
     --ckptdir_low='../ckpts/geometry/kitti/kitti2cm/conv/epoch_last.pth' --ckptdir_high='../ckpts/geometry/kitti/kitti1mm/tf/epoch_last.pth' \
-    --testdata='kitti1mm' --prefix='kitti1mm' 
-
-
-# ######################################################################
-# abaltion studies (all Conv) threshold=0
-python test.py --threshold=1.15 --kernel_size=5 --block_type='tf' \
-    --testdata_num=100 --testdata_seqs='random' \
-    --bitrate_mode=1 \
-    --ckptdir_low='../ckpts/geometry/ford/ford2cm/conv/epoch_last.pth' --ckptdir_high='../ckpts/geometry/ford/ford1mm/tf/epoch_last.pth' \
-    --threshold=0  --testdata='ford1mm_conv' --prefix='ford1mm_conv' 
-    or  
-    --threshold=8  --testdata='ford1mm_tf' --prefix='ford1mm_tf' 
-
+    --testdata='kitti1mm' --prefix='kitti1mm'
 
 # Train
 ###########################################################################################################################

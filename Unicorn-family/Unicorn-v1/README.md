@@ -43,6 +43,10 @@ For more information, please visit our homepage: https://njuvision.github.io/Uni
 
 (Note: The training dataset generation methods and the amount of training dataset are not required to be fixed. We provide some examples in `data_utils/datasets/README.sh` to show how to perform sampling, partition, quantization, and other operations on raw mesh or point cloud data to generate the training datasets.)
 
+## Pretrained Models
+
+* **Ckpt**: https://box.nju.edu.cn/f/57095bcf44604dc2baed/?dl=1
+
 ## Results
 
 `./results`

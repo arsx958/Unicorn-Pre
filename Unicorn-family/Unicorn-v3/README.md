@@ -16,6 +16,10 @@ For more information, please visit our homepage: https://njuvision.github.io/Uni
 * 2024.10.05 Initial release of part of the code and results. (The entire source code will be released to the public after the approval from the funding agency.)
 * 2024.09.12 Unicorn version 1 was accepted by TPAMI. (https://ieeexplore.ieee.org/document/10682571 and https://ieeexplore.ieee.org/document/10682566)
 
+## Results
+
+`./results`
+
 
 ## Authors
 

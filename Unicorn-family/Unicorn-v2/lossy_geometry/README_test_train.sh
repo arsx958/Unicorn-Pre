@@ -12,50 +12,6 @@ bash test_data.sh scan2cm 20
 bash test_data.sh kitti1mm 100
 bash test_data.sh ford1mm 100
 
-# ################ abaltion studies (lossy mode) ###############
-################# only scaling
-bash test_data_ablation.sh 8ivfb 4 scaling
-bash test_data_ablation.sh mpeg_dense 2 scaling
-bash test_data_ablation.sh mpeg_sparse 3 scaling
-
-bash test_data_ablation.sh owlii 4 scaling
-bash test_data_ablation.sh scan2cm 20 scaling
-
-################ occupancy_global
-bash test_data_ablation.sh 8ivfb 4 occupancy_global
-bash test_data_ablation.sh mpeg_dense 2 occupancy_global
-bash test_data_ablation.sh mpeg_sparse 3 occupancy_global
-
-################ occupancy_global_scaling
-bash test_data_ablation.sh 8ivfb 4 occupancy_global_scaling
-bash test_data_ablation.sh mpeg_dense 2 occupancy_global_scaling
-bash test_data_ablation.sh mpeg_sparse 3 occupancy_global_scaling
-
-################ occupancy local
-# bash test_data_ablation.sh 8ivfb 4 occupancy_local
-bash test_data_ablation.sh mpeg_dense 2 occupancy_local_scaling # (= optimal)
-bash test_data_ablation.sh mpeg_sparse 3 occupancy_local_scaling
-
-################ occupancy local_scaling
-# bash test_data_ablation.sh 8ivfb 4 occupancy_local_scaling # (=optimal)
-# bash test_data_ablation.sh mpeg_dense 2 occupancy_local_scaling # (=optimal)
-# bash test_data_ablation.sh mpeg_sparse 3 occupancy_local_scaling # (=optimal)
-
-
-# ################### SparsePCGC 
-bash test_data_ablation.sh 8ivfb 4 sparsepcgc
-bash test_data_ablation.sh owlii 4 sparsepcgc
-
-bash test_data_ablation.sh mpeg_dense 2 sparsepcgc
-bash test_data_ablation.sh mpeg_sparse 3 sparsepcgc
-
-bash test_data_ablation.sh scan2cm 20 sparsepcgc
-
-bash test_data_ablation.sh kitti1mm 100 sparsepcgc
-bash test_data_ablation.sh ford1mm 100 sparsepcgc
-
-
-
 # Train
 ###########################################################################################################################
 
