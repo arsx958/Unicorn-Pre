@@ -1,3 +1,6 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2023-01-07
+
 import os, sys, time, glob
 from tqdm import tqdm
 import numpy as np
@@ -7,7 +10,7 @@ import MinkowskiEngine as ME
 sys.path.append(os.path.split(__file__)[0])
 sys.path.append(os.path.split(os.path.split(__file__)[0])[0])
 from geometry_dataloader import InfSampler
-from attribute.inout import read_h5, read_ply_ascii, read_ply_o3d
+from attribute.inout import read_h5, read_ply_ascii, read_ply_o3d, read_bin
 from attribute.color_format import rgb2yuv, yuv2rgb, rgb2YCoCg, YCoCg2rgb
 
 
@@ -19,6 +22,17 @@ def load_sparse_tensor(filedir, device='cuda', order='rgb', color_format='rgb', 
             coords, feats = read_ply_ascii(filedir)
         else: 
             coords, feats = read_ply_ascii(filedir, order=order)
+    if filedir.endswith('bin'):
+        if color_format=='reflectance':
+            coords, feats = read_bin(filedir)
+            offset = coords.min(axis=0)
+            coords = coords - offset
+
+            # qs = 2 ** (18 - level)
+            qs = 400 / (2 ** 18 - 1)
+
+            coords = np.round(coords / qs)
+            coords = np.unique(coords, axis=0)
 
     coords = coords.astype("int32")
     feats = feats.astype("float32")
@@ -32,7 +46,7 @@ def load_sparse_tensor(filedir, device='cuda', order='rgb', color_format='rgb', 
         elif color_format=='ycocg':
             feats = rgb2YCoCg(feats)
     if feats.shape[-1]==1 and normalize:
-        feats = feats / 255.
+        feats = feats / 100.
     coords, feats = ME.utils.sparse_collate([coords], [feats])
     x = ME.SparseTensor(features=feats, coordinates=coords, tensor_stride=1, device=device)
 

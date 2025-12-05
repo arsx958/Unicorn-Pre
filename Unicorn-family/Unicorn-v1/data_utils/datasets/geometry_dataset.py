@@ -1,3 +1,5 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2023-01-07
 
 import os, sys, glob, time
 import open3d as o3d
@@ -35,11 +37,12 @@ def random_rotate(points):
 
     return points
 
-def main_mesh2pc(input_rootdir, output_rootdir, input_format, output_format, input_length, output_length, num_points, resolution=255):
+def main_mesh2pc(input_rootdir, output_rootdir, input_format, output_format, input_length, output_length, num_points, min_resolution=255, max_resolution=512):
     input_filedirs = sorted(glob.glob(os.path.join(input_rootdir, '**', f'*'+input_format), recursive=True))
     random.shuffle(input_filedirs)
     input_filedirs=input_filedirs[:input_length]
     print("input length:\t", len(input_filedirs))
+    assert max_resolution - min_resolution >1
     idx = 0
     while idx < output_length:
         input_filedir = random.choice(input_filedirs)
@@ -51,6 +54,8 @@ def main_mesh2pc(input_rootdir, output_rootdir, input_format, output_format, inp
         # random rotate
         points = random_rotate(points)
         # quantize
+        resolution = random.choice(np.arange(min_resolution, max_resolution))
+
         points,_,_ = quantize_resolution(points, resolution=resolution, return_offset=False)
 
         points = np.unique(points, axis=0)
@@ -106,7 +111,7 @@ def main_quantize(input_rootdir, output_rootdir, input_format, output_format, in
         # load
         points = read_coords(input_filedir)
         # quantize
-        points = quantize_precision(points, precision=precision, quant_mode='round', return_offset=False)
+        points,_,_ = quantize_precision(points, precision=precision, quant_mode='round', return_offset=False)
         points = np.unique(points.astype('int32'), axis=0).astype('int32')
         # save
         output_filedir = os.path.join(output_rootdir, input_filedir[len(input_rootdir):].split('.')[0])
@@ -115,8 +120,7 @@ def main_quantize(input_rootdir, output_rootdir, input_format, output_format, in
         if output_format == 'ply': write_ply_o3d(output_filedir+'.ply', points, dtype='float32')
         if output_format == 'h5': write_h5(output_filedir+'.h5', points)
         print('pre quantize', input_filedir, points.max() - points.min())
-        count += 1
-        if count >= output_length: break
+
     return
 
 
@@ -133,6 +137,8 @@ if __name__ == "__main__":
     parser.add_argument("--output_length", type=int, default=int(1e6))
     parser.add_argument("--num_points", type=int, default=8e5)
     parser.add_argument("--resolution", type=int, default=255)
+    parser.add_argument("--min_resolution", type=int, default=255)
+    parser.add_argument("--max_resolution", type=int, default=512)
     parser.add_argument("--precision", type=float, default=0.001)
     # parser.add_argument("--voxel_size", type=int, default=2)
     args = parser.parse_args()
@@ -142,7 +148,7 @@ if __name__ == "__main__":
         main_mesh2pc(input_rootdir=args.input_rootdir, output_rootdir=args.output_rootdir, 
                     input_format=args.input_format, output_format=args.output_format, 
                     input_length=args.input_length, output_length=args.output_length, 
-                    num_points=args.num_points, resolution=args.resolution)
+                    num_points=args.num_points, min_resolution=args.min_resolution, max_resolution=args.max_resolution)
 
     # partition
     if args.process=='partition':

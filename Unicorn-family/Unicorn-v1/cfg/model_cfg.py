@@ -1,3 +1,6 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2024-01-10
+
 def get_model_geometry_cfg(parser):
     # model cfg
     parser.add_argument("--model", type=str, default='lossless')

@@ -1,3 +1,5 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2023-01-07
 
 import torch
 import numpy as np
@@ -19,29 +21,36 @@ def array2vector(array, step=None):
 
     return vector
 
+
 def isin(data, ground_truth):
     """ Input data and ground_truth are torch tensor of shape [N, D].
     Returns a boolean vector of the same length as `data` that is True
     where an element of `data` is in `ground_truth` and False otherwise.
     """
-    data = data.clone()
-    ground_truth = ground_truth.clone()
     device = data.device
-    if len(ground_truth)==0:
+    if len(ground_truth) == 0:
         return torch.zeros([len(data)]).bool().to(device)
-    # positive value
-    min_value =  torch.min(data.min(), ground_truth.min())
-    if min_value < 0:
-        data[:,1:] -= min_value
-        ground_truth[:,1:] -= min_value
-    #
+    data, ground_truth = data.cpu(), ground_truth.cpu()
     step = torch.max(data.max(), ground_truth.max()) + 1
     data = array2vector(data, step)
     ground_truth = array2vector(ground_truth, step)
-    mask = torch.isin(data.to(device), ground_truth.to(device))
+    mask = np.isin(data.cpu().numpy(), ground_truth.cpu().numpy())
 
-    return mask
+    return torch.Tensor(mask).bool().to(device)
 
+
+
+def istopk(data, nums, rho=1.0):
+    """ Input data is sparse tensor and nums is a list of shape [batch_size].
+    Returns a boolean vector of the same length as `data` that is True
+    where an element of `data` is the top k (=nums*rho) value and False otherwise.
+    """
+    mask = torch.zeros(len(data), dtype=torch.bool)
+    row_indices_per_batch = data._batchwise_row_indices
+    for row_indices, N in zip(row_indices_per_batch, nums):
+        k = int(min(len(row_indices), N*rho))
+        _, indices = torch.topk(data.F[row_indices].squeeze().detach().cpu(), k)# must CPU.
+        mask[row_indices[indices]]=True
 
 def create_new_sparse_tensor(coordinates, features, tensor_stride, dimension, device):
     sparse_tensor = ME.SparseTensor(features=features, 
@@ -66,7 +75,7 @@ def sort_sparse_tensor(sparse_tensor, target=None):
     min_value =  coords.min()
     if min_value < 0: coords[:,1:] -= min_value
     # sort
-    indices = torch.argsort(array2vector(coords, coords.max()+1))
+    indices = torch.argsort(array2vector(coords, coords.max()+1)).cpu()
     out_coords = sparse_tensor.C[indices]
     out_feats = sparse_tensor.F.cpu()[indices]
     out = create_new_sparse_tensor(coordinates=out_coords, features=out_feats, 
@@ -79,7 +88,7 @@ def sort_sparse_tensor(sparse_tensor, target=None):
         if min_value < 0: target_coords[:,1:] -= min_value
         # sort
         target_indices = torch.argsort(array2vector(target_coords, target_coords.max()+1))
-        inverse_indices = target_indices.sort()[1]
+        inverse_indices = target_indices.sort()[1].cpu()
         assert (out_coords[inverse_indices]==target.C).all()
         out = ME.SparseTensor(features=out_feats[inverse_indices], 
                             coordinate_map_key=target.coordinate_map_key, 
@@ -87,6 +96,29 @@ def sort_sparse_tensor(sparse_tensor, target=None):
                             device=target.device)
 
     return out
+
+
+def istopk_local(data, k=1):
+    """input data is probability
+        select top-k voxels in each 8-voxels set
+    """
+    mask = torch.zeros(len(data), dtype=torch.bool)
+    _, indices = torch.topk(data.reshape(-1,8), k)
+    indices += (torch.arange(0, len(indices))*8).reshape(-1,1).to(indices.device)
+    indices = indices.reshape(-1)
+    mask[indices] = True
+    
+    return mask.bool().to(data.device)
+
+def istopk_global(data, k):
+    """input data is probability
+        select top-k voxel in all voxels
+    """
+    mask = torch.zeros(len(data), dtype=torch.bool)
+    _, indices = torch.topk(data.squeeze(), k)
+    mask[indices] = True
+
+    return mask.bool().to(data.device)
 
 
 from pytorch3d.ops.knn import knn_points, knn_gather

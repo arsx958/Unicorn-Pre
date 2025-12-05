@@ -1,3 +1,6 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2023-01-07
+
 import open3d as o3d
 import numpy as np
 

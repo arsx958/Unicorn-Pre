@@ -1,3 +1,5 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2024-01-10
 
 import argparse
 
@@ -27,7 +29,10 @@ def get_test_geometry_cfg(parser):
     parser.add_argument("--ckptdir_high",type=str, default='')
     parser.add_argument("--ckptdir_ae_high",type=str, default='')
     parser.add_argument("--ckptdir_sr_high",type=str, default='')
-    
+
+    ####################### adaption study
+    parser.add_argument("--only_global_topk", type=int, default=0)
+
     return parser
 
 

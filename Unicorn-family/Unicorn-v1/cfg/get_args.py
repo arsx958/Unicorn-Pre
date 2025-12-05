@@ -1,3 +1,6 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2024-01-10
+
 import os, sys
 sys.path.append(os.path.split(__file__)[0])
 import argparse
@@ -32,8 +35,18 @@ def get_args(component='attribute'):
     if component=='attribute': 
         parser = get_model_attribute_cfg(parser)
         parser = get_test_attribute_cfg(parser)
+    # if component=='joint':
+    #     parser = get_model_geometry_cfg(parser)
+    #     parser = get_test_geometry_cfg(parser)
+    #     parser = get_model_attribute_cfg(parser)
+    #     parser = get_test_attribute_cfg(parser)
 
     args = parser.parse_args()
+
+    # dataset
+    if args.testdata in testdata_set: args.testdata = testdata_set[args.testdata]
+    if args.traindata in traindata_set: args.traindata = traindata_set[args.traindata]
+    if args.valdata in traindata_set:  args.valdata = testdata_set[args.valdata]
     
     return args  
 

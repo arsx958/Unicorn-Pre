@@ -1,8 +1,17 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2023-01-07
+
 import os, sys
 import open3d as o3d
 import numpy as np
 import h5py
 
+def read_bin(filedir, dtype="float32"):
+    # for kitti
+    data = np.fromfile(filedir, dtype=dtype).reshape(-1, 4)
+    coords = data[:,:3]
+    reflectance = data[:,3:]
+    return coords, reflectance
 
 def read_h5(filedir, dtype_coords='int16', dtype_feats='uint8'):
     # dtype_coords='int32', dtype_feats='int16' for LiDAR
@@ -19,6 +28,16 @@ def write_h5(filedir, coords, feats, dtype_coords='int16', dtype_feats='uint8'):
         h.create_dataset('feats', data=feats, shape=feats.shape)
 
     return
+
+
+def read_h5_dynamic(filedir):
+    coords = h5py.File(filedir, 'r')['coords'][:].astype('int16')
+    feats = h5py.File(filedir, 'r')['feats'][:].astype('uint8')
+    coords_next = h5py.File(filedir, 'r')['coords_next'][:].astype('int16')
+    feats_next = h5py.File(filedir, 'r')['feats_next'][:].astype('uint8')
+    if False: print('DBG read h5 mae:', np.abs(feats.astype('float') - label.astype('float')).mean().round(2))
+
+    return coords, feats, coords_next, feats_next
 
 def read_bin(filedir, dtype="float32"):
     """kitti

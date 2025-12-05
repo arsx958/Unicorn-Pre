@@ -1,3 +1,5 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2024-01-10
 
 import os, sys
 rootdir = os.path.split(os.path.split(__file__)[0])[0]

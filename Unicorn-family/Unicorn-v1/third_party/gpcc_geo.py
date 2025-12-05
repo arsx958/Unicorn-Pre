@@ -1,3 +1,5 @@
+# Jianqiang Wang (wangjq@smail.nju.edu.cn)
+# Last update: 2023-01-07
 
 import subprocess
 import time
@@ -26,7 +28,7 @@ def gpcc_encode(filedir, bin_dir, posQuantscale=1, version=14, cfgdir='dense.cfg
         + ' --uncompressedDataPath='+filedir \
         + ' --compressedStreamPath='+bin_dir
     subp = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    subp.wait()
+    # subp.wait()
     headers = ['Total bitstream size', 'Processing time (user)', 'Processing time (wall)']
     results = {}
     c=subp.stdout.readline()
@@ -47,7 +49,7 @@ def gpcc_decode(bin_dir, dec_dir, version=14, DBG=False):
         + ' --reconstructedDataPath='+dec_dir \
         + ' --outputBinaryPly=0'
     subp = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    subp.wait()
+    # subp.wait()
     headers = ['Total bitstream size', 'Processing time (user)', 'Processing time (wall)']
     results = {}
     c=subp.stdout.readline()
